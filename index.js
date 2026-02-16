@@ -1,22 +1,41 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
 const program = new Command();
+const fs = require("fs").promises;
+const path = require("path");
+const {
+	checkDirectoryExist,
+	getDirectoryFileNames,
+} = require("./services/fileService");
+const { default: chalk } = require("chalk");
 
-program
-	.option("--folder <path>", "Folder path")
-	.option("--pattern <pattern>", "Rename pattern")
-	.option("--start <number>", "Starting number", 1)
-	.option("--ext <extension>", "File extension filter");
+async function main() {
+	program
+		.option("--folder <path>", "Folder path")
+		.option("--pattern <pattern>", "Rename pattern")
+		.option("--start <number>", "Starting number", 1)
+		.option("--ext <extension>", "File extension filter");
 
-program.parse(process.argv);
+	program.parse(process.argv);
 
-const options = program.opts();
+	const options = program.opts();
 
-if (!options.folder || !options.pattern) {
-	console.log("Folder and pattern are required");
-	process.exit(1);
+	if (!options.folder || !options.pattern) {
+		console.log("Folder and pattern are required");
+		process.exit(1);
+	}
+
+	const folder = options.folder;
+
+	const folderExists = await checkDirectoryExist(folder);
+
+	if (!folderExists) {
+		console.log(chalk.redBright("Directory doesn't exist"));
+		return;
+	}
+
+	const files = await getDirectoryFileNames(folder);
+	console.log(files);
 }
 
-console.log(options);
-
-console.log(process.argv);
+main();
