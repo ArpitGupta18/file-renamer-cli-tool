@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
 const program = new Command();
-const fs = require("fs").promises;
-const path = require("path");
 const {
 	checkDirectoryExist,
 	getDirectoryFileNames,
 	getFilesWithSpecificExtension,
+	prepareRename,
 } = require("./services/fileService");
 const { default: chalk } = require("chalk");
-const { generateNewNames } = require("./utils/renameUtil");
 
 async function main() {
 	program
@@ -48,7 +46,13 @@ async function main() {
 	const pattern = options.pattern;
 	const startNumber = options.start ?? 1;
 
-	generateNewNames(filesWithSpecificExtension, pattern, startNumber);
+	const generatedFileNames = await prepareRename(
+		filesWithSpecificExtension,
+		pattern,
+		startNumber,
+	);
+
+	console.log(generatedFileNames);
 }
 
 main();

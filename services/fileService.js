@@ -1,4 +1,5 @@
 const path = require("path");
+const { generateNewNames } = require("../utils/renameUtil");
 
 const fs = require("fs").promises;
 
@@ -29,8 +30,13 @@ async function getFilesWithSpecificExtension(files, extension) {
 		.sort();
 }
 
+async function prepareRename(files, pattern, startNumber) {
+	return generateNewNames(files, pattern, startNumber);
+}
+
 module.exports = {
 	checkDirectoryExist,
 	getDirectoryFileNames,
 	getFilesWithSpecificExtension,
+	prepareRename,
 };

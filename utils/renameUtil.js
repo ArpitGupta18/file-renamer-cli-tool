@@ -2,8 +2,9 @@ const path = require("path");
 
 async function generateNewNames(files, pattern, startNumber) {
 	let newFileNames = [];
+
 	const highest = startNumber + files.length - 1;
-	console.log("Lenght:", String(highest).length);
+
 	for (const file of files) {
 		const pathExt = path.extname(file);
 		let numStr = startNumber.toString();
@@ -16,7 +17,7 @@ async function generateNewNames(files, pattern, startNumber) {
 		newFileNames.push(fileNameObj);
 	}
 
-	console.log(newFileNames);
+	return newFileNames;
 }
 
 module.exports = {
