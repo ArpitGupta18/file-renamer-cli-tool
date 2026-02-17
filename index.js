@@ -9,6 +9,7 @@ const {
 	getFilesWithSpecificExtension,
 } = require("./services/fileService");
 const { default: chalk } = require("chalk");
+const { generateNewNames } = require("./utils/renameUtil");
 
 async function main() {
 	program
@@ -44,7 +45,10 @@ async function main() {
 		? await getFilesWithSpecificExtension(files, extension)
 		: files;
 
-	console.log(filesWithSpecificExtension);
+	const pattern = options.pattern;
+	const startNumber = options.start ?? 1;
+
+	generateNewNames(filesWithSpecificExtension, pattern, startNumber);
 }
 
 main();
