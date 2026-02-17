@@ -20,9 +20,13 @@ async function getDirectoryFileNames(directory) {
 }
 
 async function getFilesWithSpecificExtension(files, extension) {
-	return files.filter(
-		(file) => path.extname(file).split(".")[1] === extension,
-	);
+	return files
+		.filter(
+			(file) =>
+				path.extname(file).split(".")[1].toLowerCase() ===
+				extension.toLowerCase(),
+		)
+		.sort();
 }
 
 module.exports = {
