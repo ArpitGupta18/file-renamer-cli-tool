@@ -6,6 +6,7 @@ const path = require("path");
 const {
 	checkDirectoryExist,
 	getDirectoryFileNames,
+	getFilesWithSpecificExtension,
 } = require("./services/fileService");
 const { default: chalk } = require("chalk");
 
@@ -35,7 +36,15 @@ async function main() {
 	}
 
 	const files = await getDirectoryFileNames(folder);
-	console.log(files);
+	// console.log(files);
+
+	const extension = options.ext ?? null;
+
+	const filesWithSpecificExtension = !!extension
+		? await getFilesWithSpecificExtension(files, extension)
+		: files;
+
+	console.log(filesWithSpecificExtension);
 }
 
 main();

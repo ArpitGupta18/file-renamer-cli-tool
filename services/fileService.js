@@ -1,3 +1,5 @@
+const path = require("path");
+
 const fs = require("fs").promises;
 
 async function checkDirectoryExist(directory) {
@@ -17,7 +19,14 @@ async function getDirectoryFileNames(directory) {
 	return items.filter((item) => item.isFile()).map((file) => file.name);
 }
 
+async function getFilesWithSpecificExtension(files, extension) {
+	return files.filter(
+		(file) => path.extname(file).split(".")[1] === extension,
+	);
+}
+
 module.exports = {
 	checkDirectoryExist,
 	getDirectoryFileNames,
+	getFilesWithSpecificExtension,
 };
