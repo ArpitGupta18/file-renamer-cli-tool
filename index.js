@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 const { Command } = require("commander");
-const program = new Command();
-const {
-	checkDirectoryExist,
-	getDirectoryFileNames,
-	getFilesWithSpecificExtension,
-	prepareRename,
-} = require("./services/fileService");
+const { prepareRename, executeRename } = require("./services/fileService");
 const { default: chalk } = require("chalk");
+const readlineSync = require("readline-sync");
+const program = new Command();
 
 program
 	.option("--folder <path>", "Folder path")
@@ -32,12 +28,19 @@ const startNumber = Number(options.start) ?? 1;
 function displayPreview(renameMap) {
 	if (renameMap.length === 0) {
 		console.log(chalk.yellow("No files to rename."));
-		return;
+		return false;
 	}
+	console.log(chalk.gray(`Folder: ${folder}`));
+	console.log(chalk.gray(`Total files: ${renameMap.length}\n`));
 
+	console.log(chalk.grey(chalk.bold(`Preview:`)));
+
+	console.log("-".repeat(40));
 	renameMap.forEach(({ oldName, newName }) => {
 		console.log(chalk.bgYellow(oldName) + " → " + chalk.bgGreen(newName));
 	});
+	console.log("-".repeat(40));
+	return true;
 }
 async function main() {
 	try {
@@ -48,7 +51,28 @@ async function main() {
 			extension,
 		);
 
-		displayPreview(renameMap);
+		const hasDisplayed = displayPreview(renameMap);
+
+		if (!hasDisplayed) {
+			return;
+		}
+
+		let userInput = readlineSync.question(
+			"Would you like to proceed (y/n): ",
+		);
+
+		if (userInput.toLowerCase() !== "y") {
+			return;
+		}
+
+		const hasRenamed = await executeRename(folder, renameMap);
+
+		if (!hasRenamed) {
+			console.log(chalk.redBright("File has not been renamed"));
+			return;
+		}
+
+		console.log(chalk.greenBright("Files have been renamed successfully"));
 	} catch (error) {
 		console.log(chalk.redBright(error.message));
 		process.exit(1);

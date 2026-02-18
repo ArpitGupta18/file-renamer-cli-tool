@@ -46,6 +46,40 @@ async function prepareRename(folder, pattern, startNumber, ext) {
 	return generateNewNames(files, pattern, startNumber);
 }
 
+async function executeRename(folder, renameMap) {
+	const tempMap = renameMap.map((item, index) => {
+		const ext = path.extname(item.oldName);
+
+		return {
+			oldName: item.oldName,
+			tempName: `__renamer_tmp${index}${ext}`,
+			newName: item.newName,
+		};
+	});
+
+	try {
+		for (const item of tempMap) {
+			const oldPath = path.join(folder, item.oldName);
+			const tempPath = path.join(folder, item.tempName);
+			await fs.rename(oldPath, tempPath);
+		}
+	} catch {
+		return false;
+	}
+
+	try {
+		for (const item of tempMap) {
+			const tempPath = path.join(folder, item.tempName);
+			const newPath = path.join(folder, item.newName);
+			await fs.rename(tempPath, newPath);
+		}
+	} catch (error) {
+		return false;
+	}
+	return true;
+}
+
 module.exports = {
 	prepareRename,
+	executeRename,
 };
